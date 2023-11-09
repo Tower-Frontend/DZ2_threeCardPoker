@@ -1,0 +1,11 @@
+.cards{
+    display: flex;
+    margin-bottom: 20px;
+}
+.dealer_cards{
+    display: flex;
+}
+.form_play{
+    display: flex;
+    gap: 10px;
+}
