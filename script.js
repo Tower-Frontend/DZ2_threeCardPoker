@@ -61,7 +61,7 @@ let comboCheck = function(card1, card2, card3) {
             cards[i].value = "14"
         }
 
-        card[i].value=Number(card[i].value);
+        cards[i].value=Number(cards[i].value);
     }
 
     cards.sort(function(a, b){return a - b});
@@ -113,6 +113,10 @@ fetch(`https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1`)
             document.getElementById("card2").src=`${threeMyDeck.cards[2].image}`;
 
 
+            const myComboBlockText = document.querySelector(".cards_info");
+            let myCombo = comboCheck(threeMyDeck.cards[0],threeMyDeck.cards[1],threeMyDeck.cards[2]);
+            myComboBlockText.innerText = myCombo[1];
+
 
     const form = document.querySelector(".form_play");
 
@@ -120,10 +124,6 @@ fetch(`https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1`)
         event.preventDefault();
         const parent = event.currentTarget;
 
-        let massage = parseInt(parent.querySelector(".money").value);
-        money = money - massage;
-        const moneyBlock = document.querySelector(".count");
-        moneyBlock.innerText = money;
         const dealerCards = document.querySelector(".dealer_cards");
         fetch(`https://www.deckofcardsapi.com/api/deck/${myDeckId}/draw/?count=3`)
         .then(response => response.json())
@@ -133,11 +133,37 @@ fetch(`https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1`)
             document.getElementById("dealer_card1").src=`${treeDealerCards.cards[1].image}`;
             document.getElementById("dealer_card2").src=`${treeDealerCards.cards[2].image}`;
 
+            const dealerComboBlockText = document.querySelector(".dealer_cards_info");
+            let dealerCombo = comboCheck(treeDealerCards.cards[0],treeDealerCards.cards[1],treeDealerCards.cards[2]);
+            dealerComboBlockText.innerText = dealerCombo[1];
 
-
+            
+            let massage = parseInt(parent.querySelector(".money").value);
+            if (myCombo[0] > dealerCombo[0])
+            {
+                money = money + massage;
+            } else if (myCombo < dealerCombo) {
+                money = money - massage;
+            } else {
+                //тут нужно отсартировать карты
+                if (Number(threeMyDeck.cards[2].value) > Number(treeDealerCards.cards[2].value)){
+                    money = money + massage;
+                } else if(Number(threeMyDeck.cards[2].value) < Number(treeDealerCards.cards[2].value)){
+                    money = money - massage;
+                }
+                else{
+                    money = money;
+                }
+            }
+            const moneyBlock = document.querySelector(".count");
+            moneyBlock.innerText = money;
 
 
         }).catch(error => console.error(error));
+
+
+
+
     }
 
     form.addEventListener("submit", handleSubmit);
