@@ -46,12 +46,53 @@ let money = 1000;
 //   }
 
 let comboCheck = function(card1, card2, card3) {
-    // if ((card1.suit == card2.suit == card3.suit)||())
 
+    let cards = [card1,card2,card3];
 
+    for(let i = 0;i<cards.length;i++)
+    {
+        if (cards[i].value =="JACK" ){
+            cards[i].value = "11"
+        } else if (cards[i].value =="QUEEN" ){
+            cards[i].value = "12"
+        } else if (cards[i].value =="KING" ){
+            cards[i].value = "13"
+        }else if (cards[i].value =="ACE" ){
+            cards[i].value = "14"
+        }
 
+        card[i].value=Number(card[i].value);
+    }
 
-    return 1;
+    cards.sort(function(a, b){return a - b});
+
+    //стрит флеш
+    if (((Number(card1.value) == Number(card2.value)+1 == Number(card3.value)+2) || ((Number(card1.value) == 2) && (Number(card2.value) == 3) && (Number(card3.value) == 14))) 
+    && (card1.suit == card1.suit == card1.suit))
+    {
+        return [5,"Стрит флеш"];
+    }
+    //тройка
+    if (Number(card1.value) == Number(card2.value) == Number(card3.value))
+    {
+        return [4,"Тройка"];
+    }
+    // стрит
+    if ((Number(card1.value) == Number(card2.value)+1 == Number(card3.value)+2) || ((Number(card1.value) == 2) && (Number(card2.value) == 3) && (Number(card3.value) == 14)))
+    {
+        return [3,"Стрит"];
+    }
+    // флеш
+    if (card1.suit == card1.suit == card1.suit)
+    {
+        return [2,"Флеш"];
+    }
+    // пара
+    if ((Number(card1.value) == Number(card2.value)) || (Number(card2.value) == Number(card3.value)) || (Number(card1.value) == Number(card3.value))){
+        return [1,"Пара"];
+    }
+    // старшая карта
+    return [0,"Старшая карты"];
   };
 
 
