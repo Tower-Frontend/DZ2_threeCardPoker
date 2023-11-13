@@ -2,49 +2,6 @@ let shuffled;
 let remaining;
 let money = 1000;
 
-    // let response = await fetch("https://www.deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1").then(res=>res).catch(err=>err);
-    // let data = await response.json();
-    // myDeckId = data.deck_id;
-
-    // console.log(myDeckId)
-
-    // async function AJAX(url, requestMethod, requestPayload = {}) {
-    //     let request;
-    //     if (requestMethod.toLowerCase() !== 'get' && requestMethod.toLowerCase() !== 'head') {
-    //     request = new Request(url, {
-    //     headers: {
-    //     'Content-Type': 'application/json; charset=UTF-8',
-    //     },
-    //     credentials: 'include',
-    //     body: JSON.stringify(requestPayload),
-    //     method: requestMethod,
-    //     });
-    //     } else {
-    //     request = new Request(url, {
-    //     headers: {
-    //     'Content-Type': 'application/json; charset=UTF-8',
-    //     },
-    //     credentials: 'include',
-    //     method: requestMethod,
-    //     });
-    //     }
-        
-    //     return fetch(request);
-    //     }
-
-// myDeckIdTake().then(myDeckId => {
-//     myDeckId; // полученный список фильмов
-// })
-
-// console.log(myDeckId);
-
-// async function myDeckIdTake() {
-//     let response = await fetch(`https://www.deckofcardsapi.com/api/deck/${myDeckId}/draw/?count=3`);
-//     let data = await response.json();
-//     myDeckId = data.deck_id;
-//     return 1;
-//   }
-
 let comboCheck = function(card1, card2, card3) {
 
     let cards = [card1,card2,card3];
@@ -142,17 +99,22 @@ fetch(`https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1`)
             if (myCombo[0] > dealerCombo[0])
             {
                 money = money + massage;
+                alert("Победа");
             } else if (myCombo < dealerCombo) {
                 money = money - massage;
+                alert("Проигрыш");
             } else {
                 //тут нужно отсартировать карты
                 if (Number(threeMyDeck.cards[2].value) > Number(treeDealerCards.cards[2].value)){
                     money = money + massage;
+                    alert("Победа");
                 } else if(Number(threeMyDeck.cards[2].value) < Number(treeDealerCards.cards[2].value)){
                     money = money - massage;
+                    alert("Проигрыш");
                 }
                 else{
                     money = money;
+                    alert("Ничья");
                 }
             }
             const moneyBlock = document.querySelector(".count");
