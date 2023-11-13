@@ -34,7 +34,7 @@ let comboCheck = function(card1, card2, card3) {
     {
         return [4,"Тройка"];
     }
-    // стрит
+    // стрит не работает
     if ((Number(card1.value) == Number(card2.value)+1 == Number(card3.value)+2) || ((Number(card1.value) == 2) && (Number(card2.value) == 3) && (Number(card3.value) == 14)))
     {
         return [3,"Стрит"];
@@ -105,10 +105,14 @@ fetch(`https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1`)
                 alert("Проигрыш");
             } else {
                 //тут нужно отсартировать карты
-                if (Number(threeMyDeck.cards[2].value) > Number(treeDealerCards.cards[2].value)){
+
+                myHightCard = Math.max(Number(threeMyDeck.cards[0].value),Number(threeMyDeck.cards[1].value),Number(threeMyDeck.cards[2].value));
+                dealerHightCard = Math.max(Number(treeDealerCards.cards[0].value),Number(treeDealerCards.cards[1].value),Number(treeDealerCards.cards[2].value));
+
+                if (myHightCard > dealerHightCard){
                     money = money + massage;
                     alert("Победа");
-                } else if(Number(threeMyDeck.cards[2].value) < Number(treeDealerCards.cards[2].value)){
+                } else if(myHightCard < dealerHightCard){
                     money = money - massage;
                     alert("Проигрыш");
                 }
