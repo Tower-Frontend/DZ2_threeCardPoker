@@ -35,7 +35,7 @@ let comboCheck = function(card1, card2, card3) {
         return [4,"Тройка"];
     }
     // стрит
-    if (((Number(card1.value) == (Number(card2.value) + 1)) && (Number(card2.value) == (Number(card3.value) + 1 ))) ||
+    if (((Number(card1.value) == (Number(card2.value) - 1)) && (Number(card2.value) == (Number(card3.value) - 1 ))) ||
     ((Number(card1.value) == 2) && (Number(card2.value) == 3) && (Number(card3.value) == 14))){
         return [3,"Стрит"];
     }
