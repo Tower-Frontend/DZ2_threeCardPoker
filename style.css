@@ -9,3 +9,10 @@
     display: flex;
     gap: 10px;
 }
+
+.textRules__wrapper{
+    position: absolute;
+    top: 10%;
+    right: 10%;
+    max-width: 25%;
+}
