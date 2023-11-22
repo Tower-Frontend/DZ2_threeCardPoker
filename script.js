@@ -1,8 +1,8 @@
-let shuffled;
 let remaining;
 let money = 1000;
+let deckId = null;
 
-let comboCheck = function(card1, card2, card3) {
+function comboCheck (card1, card2, card3) {
 
     let cards = [card1,card2,card3];
 
@@ -21,7 +21,7 @@ let comboCheck = function(card1, card2, card3) {
     }
     
     cards.sort(function(a, b){return Number(a.value) - Number(b.value)});
-    card1 = cards[0];// по хорошему это все переписать но пока отлаживаю оставлю
+    card1 = cards[0];
     card2 = cards[1];
     card3 = cards[2];
     // стрит флеш
@@ -51,13 +51,68 @@ let comboCheck = function(card1, card2, card3) {
     return [0,"Старшая карты"];
   };
 
-fetch(`https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1`)
+function shuffleDeck() {
+  return fetch('https://www.deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1')
     .then(response => response.json())
     .then(data => {
+      deckId = data.deck_id;
+      remainingCards = data.remaining;
+    })
+    .catch(error => console.error(error));
+}
 
-    let myDeckId = data.deck_id;
+function checkMoney(money,bet){
+    if (money < 1){
+        alert("Вы проиграли");
+        return true;
+    }
+    if(bet>money){
+        alert("У вас нет столько денег");
+        return true;
+    }
+    return false;
+}
 
-    fetch(`https://www.deckofcardsapi.com/api/deck/${myDeckId}/draw/?count=3`)
+function checkResoult(myCombo,dealerCombo,parent,threeMyDeck,treeDealerCards){
+    let massage = parseInt(parent.querySelector(".money").value);
+
+    if (checkMoney(money,massage)){
+        return;
+    }
+
+    if (myCombo[0] > dealerCombo[0])
+    {
+        money = money + massage;
+        alert("Победа");
+    } else if (myCombo < dealerCombo) {
+        money = money - massage;
+        alert("Проигрыш");
+    } else {
+
+        myHightCard = Math.max(Number(threeMyDeck.cards[0].value),Number(threeMyDeck.cards[1].value),Number(threeMyDeck.cards[2].value));
+        dealerHightCard = Math.max(Number(treeDealerCards.cards[0].value),Number(treeDealerCards.cards[1].value),Number(treeDealerCards.cards[2].value));
+
+        if (myHightCard > dealerHightCard){
+            money = money + massage;
+            alert("Победа");
+        } else if(myHightCard < dealerHightCard){
+            money = money - massage;
+            alert("Проигрыш");
+        }
+        else{
+            money = money;
+            alert("Ничья");
+        }
+    }
+    const moneyBlock = document.querySelector(".count");
+    moneyBlock.innerText = money;
+}
+
+function startWork(person) {
+    if (deckId === null || remainingCards === 0) {
+        shuffleDeck().then(() => startWork(person));
+      } else if (remainingCards > 0) {
+    fetch(`https://www.deckofcardsapi.com/api/deck/${deckId}/draw/?count=3`)
         .then(response => response.json())
         .then(threeMyDeck => {
 
@@ -71,14 +126,12 @@ fetch(`https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1`)
             let myCombo = comboCheck(threeMyDeck.cards[0],threeMyDeck.cards[1],threeMyDeck.cards[2]);
             myComboBlockText.innerText = myCombo[1];
 
-    const form = document.querySelector(".form_play");
-
     const handleSubmit = (event) => {
         event.preventDefault();
         const parent = event.currentTarget;
 
         const dealerCards = document.querySelector(".dealer_cards");
-        fetch(`https://www.deckofcardsapi.com/api/deck/${myDeckId}/draw/?count=3`)
+        fetch(`https://www.deckofcardsapi.com/api/deck/${deckId}/draw/?count=3`)
         .then(response => response.json())
         .then(treeDealerCards => {
 
@@ -89,41 +142,14 @@ fetch(`https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1`)
             const dealerComboBlockText = document.querySelector(".dealer_cards_info");
             let dealerCombo = comboCheck(treeDealerCards.cards[0],treeDealerCards.cards[1],treeDealerCards.cards[2]);
             dealerComboBlockText.innerText = dealerCombo[1];
-            
-            let massage = parseInt(parent.querySelector(".money").value);
-            if (myCombo[0] > dealerCombo[0])
-            {
-                money = money + massage;
-                alert("Победа");
-            } else if (myCombo < dealerCombo) {
-                money = money - massage;
-                alert("Проигрыш");
-            } else {
-
-                myHightCard = Math.max(Number(threeMyDeck.cards[0].value),Number(threeMyDeck.cards[1].value),Number(threeMyDeck.cards[2].value));
-                dealerHightCard = Math.max(Number(treeDealerCards.cards[0].value),Number(treeDealerCards.cards[1].value),Number(treeDealerCards.cards[2].value));
-
-                if (myHightCard > dealerHightCard){
-                    money = money + massage;
-                    alert("Победа");
-                } else if(myHightCard < dealerHightCard){
-                    money = money - massage;
-                    alert("Проигрыш");
-                }
-                else{
-                    money = money;
-                    alert("Ничья");
-                }
-            }
-            const moneyBlock = document.querySelector(".count");
-            moneyBlock.innerText = money;
+            checkResoult(myCombo,dealerCombo,parent,threeMyDeck,treeDealerCards);
+            let deckId = null;
         }).catch(error => console.error(error));
     }
-
+    const form = document.querySelector(".form_play");
     form.addEventListener("submit", handleSubmit);
-
     }).catch(error => console.error(error));
-}).catch(error => console.error(error));
+  }
+}
 
-
-
+startWork();
