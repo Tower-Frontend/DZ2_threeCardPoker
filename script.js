@@ -1,6 +1,8 @@
 let remaining;
 let money = 1000;
 let deckId = null;
+let myCombo;
+let myCards;
 
 function comboCheck (card1, card2, card3) {
 
@@ -108,48 +110,49 @@ function checkResoult(myCombo,dealerCombo,parent,threeMyDeck,treeDealerCards){
     moneyBlock.innerText = money;
 }
 
-function startWork(person) {
+function startWork() {
     if (deckId === null || remainingCards === 0) {
-        shuffleDeck().then(() => startWork(person));
+        shuffleDeck().then(() => startWork());
       } else if (remainingCards > 0) {
     fetch(`https://www.deckofcardsapi.com/api/deck/${deckId}/draw/?count=3`)
         .then(response => response.json())
         .then(threeMyDeck => {
-
-
+            
+            myCards = threeMyDeck;
             document.getElementById("card0").src=`${threeMyDeck.cards[0].image}`;
             document.getElementById("card1").src=`${threeMyDeck.cards[1].image}`;
             document.getElementById("card2").src=`${threeMyDeck.cards[2].image}`;
 
 
             const myComboBlockText = document.querySelector(".cards_info");
-            let myCombo = comboCheck(threeMyDeck.cards[0],threeMyDeck.cards[1],threeMyDeck.cards[2]);
+            myCombo = comboCheck(threeMyDeck.cards[0],threeMyDeck.cards[1],threeMyDeck.cards[2]);
             myComboBlockText.innerText = myCombo[1];
-
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        const parent = event.currentTarget;
-
-        const dealerCards = document.querySelector(".dealer_cards");
-        fetch(`https://www.deckofcardsapi.com/api/deck/${deckId}/draw/?count=3`)
-        .then(response => response.json())
-        .then(treeDealerCards => {
-
-            document.getElementById("dealer_card0").src=`${treeDealerCards.cards[0].image}`;
-            document.getElementById("dealer_card1").src=`${treeDealerCards.cards[1].image}`;
-            document.getElementById("dealer_card2").src=`${treeDealerCards.cards[2].image}`;
-
-            const dealerComboBlockText = document.querySelector(".dealer_cards_info");
-            let dealerCombo = comboCheck(treeDealerCards.cards[0],treeDealerCards.cards[1],treeDealerCards.cards[2]);
-            dealerComboBlockText.innerText = dealerCombo[1];
-            checkResoult(myCombo,dealerCombo,parent,threeMyDeck,treeDealerCards);
-            let deckId = null;
         }).catch(error => console.error(error));
-    }
-    const form = document.querySelector(".form_play");
-    form.addEventListener("submit", handleSubmit);
-    }).catch(error => console.error(error));
   }
 }
+
+const handleSubmit = (event) => {
+    event.preventDefault();
+    const parent = event.currentTarget;
+
+    const dealerCards = document.querySelector(".dealer_cards");
+    fetch(`https://www.deckofcardsapi.com/api/deck/${deckId}/draw/?count=3`)
+    .then(response => response.json())
+    .then(treeDealerCards => {
+
+        document.getElementById("dealer_card0").src=`${treeDealerCards.cards[0].image}`;
+        document.getElementById("dealer_card1").src=`${treeDealerCards.cards[1].image}`;
+        document.getElementById("dealer_card2").src=`${treeDealerCards.cards[2].image}`;
+
+        const dealerComboBlockText = document.querySelector(".dealer_cards_info");
+        let dealerCombo = comboCheck(treeDealerCards.cards[0],treeDealerCards.cards[1],treeDealerCards.cards[2]);
+        dealerComboBlockText.innerText = dealerCombo[1];
+        checkResoult(myCombo,dealerCombo,parent,myCards,treeDealerCards);
+    }).catch(error => console.error(error));
+    shuffleDeck().then(() => startWork());
+}
+
+const form = document.querySelector(".form_play");
+form.addEventListener("submit", handleSubmit);
 
 startWork();
